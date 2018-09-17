@@ -8,8 +8,8 @@
 #include<fstream>
 
 using namespace std;
-#define BUFFER_SIZE 512
-#define BLOCKSIZE 512
+#define BUFFER_SIZE 524288
+#define BLOCKSIZE 524288
 
 int getfilesize(ifstream &fin)
 {
@@ -88,8 +88,8 @@ int main(int argc, char **argv)
    ifstream fin;
    ofstream fout;
   
-   fin.open("file.txt", fstream::binary);
-   fout.open("socket.txt");
+   fin.open("a.mp4", fstream::binary);
+   fout.open("socket.mp4");
    
    int fsize= getfilesize(fin);
 

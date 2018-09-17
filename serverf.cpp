@@ -7,8 +7,8 @@
 #include<fstream>
 #include<string.h>
 
-#define BUFFER_SIZE 512
-#define BLOCKSIZE 512
+#define BUFFER_SIZE 524288
+#define BLOCKSIZE 524288
 
 // int gfilesize(ifstream &fin)
 // {
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     ifstream fin;
    //ofstream fout;
   
-   fin.open("file.txt", fstream::binary);
+   fin.open("a.mp4", fstream::binary);
    //fout.open("newfile.txt");
    
    //int fsize= gfilesize(fin);
