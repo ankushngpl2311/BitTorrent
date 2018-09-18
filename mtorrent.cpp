@@ -134,7 +134,7 @@ int main()
 
     
 
-   fout.open("abc.txt");
+   fout.open("abc.mtorrent");
 
      
 int n = tracker1ip.length();  
