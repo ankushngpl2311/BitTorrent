@@ -60,6 +60,18 @@ int main(int argc, char **argv)
       * will be read by server
    */
 	
+
+   /* Now read server response */
+   bzero(buffer,256);
+   n = read(sockfd, buffer, 255);
+   
+   if (n < 0) {
+      perror("ERROR reading from socket");
+      exit(1);
+   }
+  
+   printf("%s\n",buffer);
+
    printf("Please enter the message: ");
    bzero(buffer,256);
    fgets(buffer,255,stdin);
@@ -72,6 +84,7 @@ int main(int argc, char **argv)
       exit(1);
    }
    
+  
    /* Now read server response */
    bzero(buffer,256);
    n = read(sockfd, buffer, 255);
@@ -80,8 +93,14 @@ int main(int argc, char **argv)
       perror("ERROR reading from socket");
       exit(1);
    }
-	
+  
    printf("%s\n",buffer);
+   while(1)
+   {  int t;
+    cin>>t;
+    if(t==1)
+      break;
+   }
    close(sockfd);
    return 0;
 }
