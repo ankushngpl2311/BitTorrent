@@ -5,14 +5,43 @@
 #include<unistd.h>
 #include <string.h>
 #include<iostream>
-
+#include<vector>
 using namespace std;
 
+void splitString(vector <string> &v_str  , string line  , char delim)
+{   
+    v_str.clear();
+
+
+    int i;
+  int l= line.length();
+  
+  
+  string s="";
+  for(i=0;i<l;i++)
+  {   
+       
+       if(line[i]==delim)
+       { 
+          v_str.push_back(s);
+          s="";
+          continue;
+               }
+       s= s+ line[i];
+  }
+  if(s!="")
+    v_str.push_back(s);
+  
+}
+string command(string com,string sha,string filename,string clientip,string clientport)
+{
+                        
+}
 
 int main(int argc, char **argv)
 {
 	int sockfd,portno ,n;
-
+  //cout<<"hello\n";
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 
@@ -23,10 +52,33 @@ int main(int argc, char **argv)
 	 fprintf( stderr, "usage %s hostname port \n",argv[0]);
 	}
      
+    vector < string > clientaddr;
 
-     portno =atoi((char*)argv[2]);
+    splitString(clientaddr , argv[1], ':');
+      string clientip=clientaddr[0];
+      string clientport=clientaddr[1];
+         
+      vector < string > servaddr;
+
+      splitString(servaddr, argv[2], ':');
+      
+     int len= servaddr[1].length();
+     char arr[len+1];
+     strcpy(arr, servaddr[1].c_str());
+     arr[len]=0;
+     portno =atoi(arr);
+       
+
+
+   printf("Please enter the command: ");
+   bzero(buffer,256);
+   fgets(buffer,255,stdin);
+   
+
+
 
      //create a socket
+
 
      sockfd = socket(AF_INET, SOCK_STREAM, 0);
      
@@ -37,8 +89,15 @@ int main(int argc, char **argv)
         exit(1);
      }
      printf("socket created");
+      //getchar();
+       
 
-     server= gethostbyname((char*)argv[1]);
+
+      len= servaddr[0].length();
+     char servip[len+1];
+     strcpy(servip, servaddr[0].c_str());
+     servip[len]=0;
+     server= gethostbyname(servip);
       
      if (server == NULL) {
       fprintf(stderr,"ERROR, no such host\n");
@@ -55,10 +114,24 @@ int main(int argc, char **argv)
       perror("ERROR connecting");
       exit(1);
    }
+
+   cout<<"connected";
    
    /* Now ask for a message from the user, this message
       * will be read by server
    */
+
+    printf("Please enter the message: ");
+   bzero(buffer,256);
+   fgets(buffer,255,stdin);
+   
+    //Send message to the server 
+   n = write(sockfd, buffer, strlen(buffer));
+   
+   if (n < 0) {
+      perror("ERROR writing to socket");
+      exit(1);
+   }
 	
 
    /* Now read server response */
@@ -72,33 +145,34 @@ int main(int argc, char **argv)
   
    printf("%s\n",buffer);
 
-   printf("Please enter the message: ");
-   bzero(buffer,256);
-   fgets(buffer,255,stdin);
+   // printf("Please enter the message: ");
+   // bzero(buffer,256);
+   // // fgets(buffer,255,stdin);
    
-   /* Send message to the server */
-   n = write(sockfd, buffer, strlen(buffer));
+   // /* Send message to the server */
+   // n = write(sockfd, buffer, strlen(buffer));
    
-   if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-   }
+   // if (n < 0) {
+   //    perror("ERROR writing to socket");
+   //    exit(1);
+   // }
    
   
-   /* Now read server response */
-   bzero(buffer,256);
-   n = read(sockfd, buffer, 255);
+   // /* Now read server response */
+   // bzero(buffer,256);
+   // n = read(sockfd, buffer, 255);
    
-   if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-   }
+   // if (n < 0) {
+   //    perror("ERROR reading from socket");
+   //    exit(1);
+   // }
   
-   printf("%s\n",buffer);
+   // printf("%s\n",buffer);
    while(1)
-   {  int t;
+   {  char t;
     cin>>t;
-    if(t==1)
+    cout<<t<<"\n";
+    if(t=='1')
       break;
    }
    close(sockfd);

@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 	if(sockfd<0)
 	{
-		perror("Erroe opening socket");
+		perror("Error opening socket");
 		exit(1);
 	}
     

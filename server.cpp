@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     
      cout<<"Socket created\n";
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = 5001;
+    portno = 5002;
    //initialize socket struct
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -57,12 +57,13 @@ int main(int argc, char *argv[])
     	perror("Error on accept");
     	exit(1);
     }
-
+     cout<<"accepted\n";
     //start communication
 
     bzero(buffer,256);
     n=read(newsockfd,buffer,255);
-
+    int length=strlen(buffer);
+    cout<<"len of message= "<<length<<"\n";
 
     if(n<0)
     {

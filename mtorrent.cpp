@@ -74,7 +74,9 @@ while(fsize>0)
    string s="";
 
    s=hexStr(obuf,20);
-        	
+   cout<<s<<" "<<s.length()<<"\n";
+   s.erase(20,20);  	
+   cout<<s<<" "<<s.length()<<"\n";
    sha+= s;
   
 
