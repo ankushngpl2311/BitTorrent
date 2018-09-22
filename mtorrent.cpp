@@ -20,6 +20,9 @@ int getfilesize(ifstream &fin)
     fin.seekg( 0, std::ios::beg);
     return fsize;
 }
+
+
+
 string hexStr(unsigned char *data, int len)
 {
 
@@ -74,9 +77,9 @@ while(fsize>0)
    string s="";
 
    s=hexStr(obuf,20);
-   cout<<s<<" "<<s.length()<<"\n";
+   //cout<<s<<" "<<s.length()<<"\n";
    s.erase(20,20);  	
-   cout<<s<<" "<<s.length()<<"\n";
+   //cout<<s<<" "<<s.length()<<"\n";
    sha+= s;
   
 

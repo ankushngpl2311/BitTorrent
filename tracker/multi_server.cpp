@@ -31,7 +31,7 @@ int main(int argc , char *argv[])
     fd_set readfds;   
          
     //a message  
-    char *message = "ECHO Daemon v1.0 \r\n";   
+    char *message = "Tracker 1 active! Thank you for connecting. \r\n";   
      
     //initialise all client_socket[] to 0 so not checked  
     for (i = 0; i < max_clients; i++)   
@@ -128,16 +128,16 @@ int main(int argc , char *argv[])
            
 
 
-            bzero(buffer,256);
-            n=read(new_socket,buffer,255);
+            // bzero(buffer,256);
+            // n=read(new_socket,buffer,255);
 
 
-            if(n<0)
-            {
-              perror("Error reading from socket");
-              exit(1);
-            }
-            printf("Here is the message %s:",buffer);
+            // if(n<0)
+            // {
+            //   perror("Error reading from socket");
+            //   exit(1);
+            // }
+            // printf("Here is the message %s:",buffer);
             
 
             
@@ -154,6 +154,17 @@ int main(int argc , char *argv[])
             // fflush(stdout);
             // cout<<stdin;
             puts("Welcome message sent successfully");   
+                 
+            //  bzero(buffer,256);
+            // n=read(new_socket,buffer,255);
+
+
+            // if(n<0)
+            // {
+            //   perror("Error reading from socket");
+            //   exit(1);
+            // }
+            // printf("Here is the message %s:",buffer);
                  
             //add new socket to array of sockets  
             for (i = 0; i < max_clients; i++)   
@@ -193,9 +204,11 @@ int main(int argc , char *argv[])
                      
                 //Echo back the message that came in  
                 else 
-                {   
+                {     
                     //set the string terminating NULL byte on the end  
                     //of the data read  
+
+
                    cout<<"in else "<<buffer<<"\n";
                    //fflush(stdin);
                    
