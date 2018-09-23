@@ -1,6 +1,4 @@
 
-//Example code: A simple server side code, which echos back the received message. 
-//Handle multiple socket connections with select and fd_set on Linux  
 #include <stdio.h>  
 #include <string.h>   //strlen  
 #include <stdlib.h>  
@@ -12,6 +10,7 @@
 #include <netinet/in.h>  
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros  
 #include<iostream>
+#include "tracker.h"
 using namespace std;
 #define TRUE   1  
 #define FALSE  0  
@@ -209,11 +208,20 @@ int main(int argc , char *argv[])
                     //of the data read  
 
 
-                   cout<<"in else "<<buffer<<"\n";
+                  
                    //fflush(stdin);
                    
                     buffer[valread] = '\0';   
-                   send(sd , buffer , strlen(buffer) , 0 );   
+                     cout<<"in else "<<buffer<<"\n";
+                     cout<<"len= "<<strlen(buffer)<<"\n";
+                    string commandstr(buffer);
+                    vector <string> commandvec;
+                    splitString(commandvec, commandstr ,' ');
+                    if(commandvec[0]=="share")
+                    {
+                        share(commandvec);
+                    }
+                   //send(sd , buffer , strlen(buffer) , 0 );   
                    bzero(buffer,1024);
                 }   
             }   

@@ -8,6 +8,11 @@
 #include<string>
 #include<string.h>
 #include<map>
+#include <thread> 
+
+#include <netdb.h>
+#include <netinet/in.h>
+#include<unistd.h>
 
 //#include "functions.h"
 using namespace std;
@@ -25,6 +30,14 @@ string shaOfStr(string hashstr);
 
 void downloadpathfile(string sha, string localpathstr);
 bool mapToFile(const string &filename,map < string , string > &fileMap);
+
+void conntrackershare(string command,string tracker1addrstr,string tracker2addrstr, string hashofhash,string filename,string clientaddrstr);
+
+void get(const string &mtorrentpathstr, string tracker1addrstr,string tracker2addrstr,string destinationpathstr);
+string shafrommtorrent(const string &mtorrentpathstr);
+
+void get(const string &mtorrentpathstr, string tracker1addrstr,string tracker2addrstr,string destinationpathstr);
+void conntrackerget(tracker1addrstr, tracker2addrstr, hashofhash,string &peers);
 
 
 

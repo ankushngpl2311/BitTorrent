@@ -66,6 +66,119 @@ bool mapToFile(const string &filename,map < string , string > &fileMap)     //Wr
     return true;
 }
 
+
+
+void conntrackershare(string command,string tracker1addrstr,string tracker2addrstr, string hashofhash,string filename,string clientaddrstr)
+{  
+
+   string tosendstr = "";
+   
+   tosendstr = command + " " + hashofhash + " " + filename + " " + clientaddrstr;
+
+   
+
+   int sockfd,portno ,n;
+  
+  struct sockaddr_in serv_addr;
+  struct hostent *server;
+
+  char buffer[256];
+
+  
+
+    // vector < string > clientaddr;
+
+    // splitString(clientaddr , argv[1], ':');
+    //   string clientip=clientaddr[0];
+    //   string clientport=clientaddr[1];
+         
+      vector < string > tracker1addrvec;
+
+      splitString(tracker1addrvec, tracker1addrstr, ':');
+      
+
+      //get port of tracker1
+     int len= tracker1addrvec[1].length();          //len of port
+     char tracker1portarr[len+1];
+     strcpy(tracker1portarr, tracker1addrvec[1].c_str());
+     tracker1portarr[len]=0;
+     portno =atoi(tracker1portarr);
+
+                        
+     
+      sockfd = socket(AF_INET, SOCK_STREAM, 0);
+     
+
+     if(sockfd<0)
+     {
+        perror("Error opening socket");
+        exit(1);
+     }
+     printf("socket created");
+      
+       
+
+     //get ip of tracker1
+      len= tracker1addrvec[0].length();
+     char tracker1iparr[len+1];
+     strcpy(tracker1iparr, tracker1addrvec[0].c_str());
+     tracker1iparr[len]=0;
+     server= gethostbyname(tracker1iparr);
+      
+     if (server == NULL) {
+      fprintf(stderr,"ERROR, no such host\n");
+      exit(0);
+   }
+
+     bzero((char *) &serv_addr, sizeof(serv_addr));
+   serv_addr.sin_family = AF_INET;
+   bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+   serv_addr.sin_port = htons(portno);
+   
+
+    /* Now connect to the server */
+   if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+      perror("ERROR connecting");
+      exit(1);
+   }
+
+   cout<<"connected\n";
+   
+   
+     /* Now read tracker's response */
+   bzero(buffer,256);
+   n = read(sockfd, buffer, 255);
+   
+   if (n < 0) {
+      perror("ERROR reading from socket");
+      exit(1);
+   }
+  
+   printf("%s\n",buffer);
+
+      
+  //str to char*
+    int ltosendstr = tosendstr.length();  
+      
+    
+    char tosendarr[ltosendstr + 1];  
+      
+    strcpy(tosendarr, tosendstr.c_str());  
+   
+
+    //Send message to the tracker 
+   n = write(sockfd, tosendarr, strlen(tosendarr));
+   
+   if (n < 0) {
+      perror("ERROR writing to socket");
+      exit(1);
+   }
+  
+
+
+    close(sockfd);
+
+}
 void downloadpathfile(string hashofhash, string localpathstr)
 {
     map < string, string > m;
@@ -82,7 +195,8 @@ void downloadpathfile(string hashofhash, string localpathstr)
 void share(string clientaddrstr,string tracker1addrstr,string tracker2addrstr, string localpathstr, string torrentfilename)
 {
        
-
+      //cout<<"torrent file name "<<torrentfilename<<"\n";
+      //cout<<"len= "<<torrentfilename.length()<<"\n";
 
        mtorrent(localpathstr,tracker1addrstr,tracker2addrstr,torrentfilename);
        
@@ -92,16 +206,29 @@ void share(string clientaddrstr,string tracker1addrstr,string tracker2addrstr, s
        ifstream fin;
        char filepatharr[n+1];        
 
-       strcpy(filepatharr, localpathstr.c_str()); 
+       strcpy(filepatharr, localpathstr.c_str());         //filepath needed just to open the file 
        fin.open(filepatharr, fstream::binary);  
     
        int fsize= getfilesize(fin);
       
                                              //**********************************
-       string sha =getsha(fin,fsize);       //getsha closes the  fin file
+       string sha =getsha(fin,fsize);       //getsha() closes the  fin file
                                            //*************************************
          string hashofhash= shaOfStr(sha);
        downloadpathfile(hashofhash , localpathstr );
+
+         
+       //**************************************************
+       //connect to tracker to update seeder file
+       //**************************************************
+         vector < string > localpathvec;
+         splitString(localpathvec, localpathstr , '/');
+           int lpathvec = localpathvec.size();
+         string filename =   localpathvec[ lpathvec - 1 ]; 
+
+         thread t1(conntrackershare,"share",tracker1addrstr,tracker2addrstr,hashofhash,filename,clientaddrstr);
+
+         t1.join();                  //thread runs as a deamon  (independent from main prog)
 
 
 
@@ -110,8 +237,149 @@ void share(string clientaddrstr,string tracker1addrstr,string tracker2addrstr, s
 
 
 
+void conntrackerget(tracker1addrstr, tracker2addrstr, hashofhash,string &peers)
+{
+     int sockfd,portno ,n;
+  
+  struct sockaddr_in serv_addr;
+  struct hostent *server;
+
+  char buffer[256];
+
+  
+         
+      vector < string > tracker1addrvec;
+
+      splitString(tracker1addrvec, tracker1addrstr, ':');
+      
+
+      //get port of tracker1
+     int len= tracker1addrvec[1].length();          //len of port
+     char tracker1portarr[len+1];
+     strcpy(tracker1portarr, tracker1addrvec[1].c_str());
+     tracker1portarr[len]=0;
+     portno =atoi(tracker1portarr);
+
+                        
+     
+      sockfd = socket(AF_INET, SOCK_STREAM, 0);
+     
+
+     if(sockfd<0)
+     {
+        perror("Error opening socket");
+        exit(1);
+     }
+     printf("socket created");
+      
+       
+
+     //get ip of tracker1
+      len= tracker1addrvec[0].length();
+     char tracker1iparr[len+1];
+     strcpy(tracker1iparr, tracker1addrvec[0].c_str());
+     tracker1iparr[len]=0;
+     server= gethostbyname(tracker1iparr);
+      
+     if (server == NULL) {
+      fprintf(stderr,"ERROR, no such host\n");
+      exit(0);
+   }
+
+     bzero((char *) &serv_addr, sizeof(serv_addr));
+   serv_addr.sin_family = AF_INET;
+   bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+   serv_addr.sin_port = htons(portno);
+   
+
+    /* Now connect to the server */
+   if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+      perror("ERROR connecting");
+      exit(1);
+   }
+
+   cout<<"connected\n";
+   
+   
+     /* Now read tracker's response */
+   bzero(buffer,256);
+   n = read(sockfd, buffer, 255);
+   
+   if (n < 0) {
+      perror("ERROR reading from socket");
+      exit(1);
+   }
+  
+   printf("%s\n",buffer);
+
+      
+  //str to char*
+    int ltosendstr = tosendstr.length();  
+      
+    
+    char tosendarr[ltosendstr + 1];  
+      
+    strcpy(tosendarr, tosendstr.c_str());  
+   
+
+    //Send message to the tracker 
+   n = write(sockfd, tosendarr, strlen(tosendarr));
+   
+   if (n < 0) {
+      perror("ERROR writing to socket");
+      exit(1);
+   }
+  
 
 
+    close(sockfd); 
+
+   
+}
+
+void get(const string &mtorrentpathstr, string tracker1addrstr,string tracker2addrstr,string destinationpathstr)
+{   
+     string sha;
+     sha= shafrommtorrent(mtorrentpathstr);
+     string hashofhash;
+     hashofhash = shaOfStr(sha);
+     string peers;
+     
+      thread t1(conntrackerget(tracker1addrstr, tracker2addrstr, hashofhash,ref(peers)));
+
+      t1.join(); 
+
+
+}
+
+string shafrommtorrent(const string &mtorrentpathstr)
+{
+
+    ifstream ifile;
+    ifile.open(mtorrentpathstr.c_str());
+       if(!ifile)
+    {   cout<<"coulnot read file\n";
+        // return false;   //could not read the file.
+    
+        
+    }
+      string line;
+      string sha;
+
+      while(ifile>>line)
+      {
+          sha=line;
+         // cout<<"sha in loop ="<<sha<<"\n";
+
+      }
+
+      cout<<"sha from mtorrent = "<<sha<<endl;
+      cout<<"len of sha frm mtorr= "<<sha.length()<<endl;
+
+      return sha;
+
+
+}
 
 
 void mtorrent(string filepath, string tracker1ip, string tracker2ip, string torrentfilename)
@@ -156,13 +424,16 @@ void mtorrent(string filepath, string tracker1ip, string tracker2ip, string torr
     
   
   n = torrentfilename.length();  
-      
+  //cout<<"torrent file name in mtorr "<<torrentfilename<<"\n";
+    //  cout<<"len in mtorr = "<<torrentfilename.length()<<"\n";
      
   char torrentfilenamearr[n+1];        
 
   strcpy(torrentfilenamearr, torrentfilename.c_str()); 
    
-   fout.open(torrentfilenamearr);
+   torrentfilenamearr[torrentfilename.length()]=0;
+   
+   fout.open(torrentfilenamearr,ios::binary);
 
      
     n = tracker1ip.length();  

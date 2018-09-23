@@ -11,7 +11,7 @@ CC=g++
 
 
 client:client.o functions.o
-	$(CC) -std=c++11 client.o functions.o  -o client -lssl -lcrypto
+	$(CC) -std=c++11 client.o functions.o  -o client -lssl -lcrypto -pthread
 
 
 client.o:client.cpp
