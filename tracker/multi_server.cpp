@@ -14,7 +14,7 @@
 using namespace std;
 #define TRUE   1  
 #define FALSE  0  
-#define PORT 8887  
+#define PORT 8886 
      
 int main(int argc , char *argv[])   
 {   
@@ -220,6 +220,18 @@ int main(int argc , char *argv[])
                     if(commandvec[0]=="share")
                     {
                         share(commandvec);
+                    }
+                    else if(commandvec[0]=="get")
+                    {   string peersipstr;
+                        peersipstr = get(commandvec);
+
+                        int lpeersipstr = peersipstr.length();  
+    
+                        char peersiparr[lpeersipstr + 1];  
+      
+                        strcpy(peersiparr, peersipstr.c_str()); 
+                        send(sd , peersiparr , strlen(peersiparr) , 0 );
+                        bzero(peersiparr,strlen(peersiparr)+1);
                     }
                    //send(sd , buffer , strlen(buffer) , 0 );   
                    bzero(buffer,1024);

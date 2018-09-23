@@ -6,9 +6,9 @@ using namespace std;
 bool fileToMap(const string &filename,map < string ,vector < string > > &fileMap)  //Read Map
 {
     ifstream ifile;
-    ifile.open(filename.c_str(),ios::binary);
+    ifile.open(filename.c_str());
     if(!ifile)
-    {   cout<<"coulnot read file\n";
+    {   cout<<"seeder file does not exist. Creating \n";
          return false;   //could not read the file.
     
         
@@ -116,7 +116,42 @@ void share(vector < string > &commandvec)
 }
 
 
+string get(vector < string > commandvec)    //commandvec = {get, hashofhash}
+{   
+    string hashofhash= commandvec[1];
+    string peersip="";
+    map < string, vector <string> > filemap;
 
+    fileToMap("seederlist",filemap);
+    
+    if(filemap.count(hashofhash)<=0)
+      cout<<"No clients for this file";
+  
+    else
+    {    vector < string > clients;
+       clients =filemap[hashofhash];
+
+       int lclients = clients.size();
+       
+       int i;
+
+       for(i=0;i<lclients;i++)
+       {
+          if(i%2!=0)
+          {
+            peersip = peersip + clients[i] + "," ;        // peersip = 124.0.0.1,127.2.5.4,
+          }
+       }
+
+
+    }
+   
+   cout<<"peersip in get fn = "<<peersip<<"\n";
+    return peersip;
+
+
+   
+}
 
 void splitString(vector <string> &v_str  , string line  , char delim)
 {   
